@@ -4,9 +4,11 @@ import { InputPanel } from './components/InputPanel';
 import { OutputPanel } from './components/OutputPanel';
 import { StackPanel } from './components/StackPanel';
 import { ProModal } from './components/ProModal';
+import { LegalModal } from './components/LegalModal';
+import { ConsentBanner } from './components/ConsentBanner';
 import { ExtractedDocument, LicenseState } from './types';
 import { getLicenseState } from './lib/license';
-import { Sparkles, Terminal, ArrowUpRight } from 'lucide-react';
+import { Sparkles, Terminal, ArrowUpRight, ShieldCheck } from 'lucide-react';
 
 export function App() {
   const [currentDocument, setCurrentDocument] = useState<ExtractedDocument | null>(null);
@@ -14,11 +16,18 @@ export function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isProModalOpen, setIsProModalOpen] = useState(false);
   const [isStackOpen, setIsStackOpen] = useState(false);
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [legalTab, setLegalTab] = useState<'terms' | 'privacy'>('terms');
   const [license, setLicense] = useState<LicenseState>({
     isPro: false,
     licenseKey: null,
     activatedAt: null,
   });
+
+  const handleOpenLegal = (tab: 'terms' | 'privacy') => {
+    setLegalTab(tab);
+    setIsLegalModalOpen(true);
+  };
 
   useEffect(() => {
     setLicense(getLicenseState());
@@ -91,29 +100,38 @@ export function App() {
         {/* Value Proposition / Social Proof Footer Bar */}
         <div className="border-t border-slate-900 pt-6 mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-indigo-400" />
-            <span>Built for developers, researchers, and indie builders. 100% Client-Side Privacy.</span>
+            <Terminal className="w-4 h-4 text-indigo-400 shrink-0" />
+            <span>Built for developers & AI power users. 100% Client-Side Privacy.</span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap justify-center">
             <button
-              onClick={() => setIsProModalOpen(true)}
-              className="text-slate-400 hover:text-white transition flex items-center gap-1"
+              onClick={() => handleOpenLegal('terms')}
+              className="hover:text-slate-300 transition underline underline-offset-2"
             >
-              <span>ContextClip Pro ($12)</span>
-              <ArrowUpRight className="w-3 h-3" />
+              Terms of Service
             </button>
             <span>•</span>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-slate-400 transition"
+            <button
+              onClick={() => handleOpenLegal('privacy')}
+              className="hover:text-slate-300 transition underline underline-offset-2"
             >
-              GitHub Pages Ready
-            </a>
+              Privacy Policy
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setIsProModalOpen(true)}
+              className="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-semibold"
+            >
+              <span>Unlock Pro ($12)</span>
+              <ArrowUpRight className="w-3 h-3" />
+            </button>
           </div>
         </div>
+
+        <p className="text-[10px] text-slate-600 text-center mt-2">
+          © 2026 ContextClip. All rights reserved. Independent software utility. Not affiliated with Anthropic, OpenAI, or Google.
+        </p>
       </main>
 
       {/* Modals & Drawers */}
@@ -130,8 +148,17 @@ export function App() {
         isOpen={isProModalOpen}
         onClose={() => setIsProModalOpen(false)}
         onLicenseUpdated={() => setLicense(getLicenseState())}
+        onOpenLegal={handleOpenLegal}
         isPro={license.isPro}
       />
+
+      <LegalModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        defaultTab={legalTab}
+      />
+
+      <ConsentBanner onOpenLegal={handleOpenLegal} />
     </div>
   );
 }

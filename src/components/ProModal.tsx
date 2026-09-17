@@ -6,6 +6,7 @@ interface ProModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLicenseUpdated: () => void;
+  onOpenLegal: (tab: 'terms' | 'privacy') => void;
   isPro: boolean;
 }
 
@@ -13,9 +14,12 @@ export const ProModal: React.FC<ProModalProps> = ({
   isOpen,
   onClose,
   onLicenseUpdated,
+  onOpenLegal,
   isPro,
 }) => {
   const [keyInput, setKeyInput] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [termsError, setTermsError] = useState(false);
   const [message, setMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
   if (!isOpen) return null;
@@ -99,18 +103,66 @@ export const ProModal: React.FC<ProModalProps> = ({
           </div>
         </div>
 
+        {/* Pre-Payment Terms Checkbox */}
+        <div className="mb-4 p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+          <label className="flex items-start gap-2.5 text-[11px] text-slate-300 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => {
+                setAgreedToTerms(e.target.checked);
+                if (e.target.checked) setTermsError(false);
+              }}
+              className="mt-0.5 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-0 w-4 h-4 shrink-0"
+            />
+            <span>
+              I have read and agree to the{' '}
+              <button
+                type="button"
+                onClick={() => onOpenLegal('terms')}
+                className="text-indigo-400 underline hover:text-indigo-300 font-medium"
+              >
+                Terms of Service
+              </button>{' '}
+              and{' '}
+              <button
+                type="button"
+                onClick={() => onOpenLegal('privacy')}
+                className="text-indigo-400 underline hover:text-indigo-300 font-medium"
+              >
+                Privacy Policy
+              </button>
+              . I understand this is an immediate digital software license provided as-is.
+            </span>
+          </label>
+          {termsError && (
+            <p className="text-[11px] text-red-400 mt-2 font-medium">
+              ⚠️ Please check the box above to accept the terms before proceeding to checkout.
+            </p>
+          )}
+        </div>
+
         {/* Buy Buttons */}
         <div className="space-y-2.5 mb-6">
-          <a
-            href={PAYMENT_LINKS.paypal}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 transition transform active:scale-98"
+          <button
+            type="button"
+            onClick={() => {
+              if (!agreedToTerms) {
+                setTermsError(true);
+                return;
+              }
+              window.open(PAYMENT_LINKS.paypal, '_blank', 'noopener,noreferrer');
+            }}
+            className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition transform active:scale-98 ${
+              agreedToTerms
+                ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 shadow-amber-500/25 cursor-pointer'
+                : 'bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed opacity-80'
+            }`}
           >
-            <CreditCard className="w-4 h-4 text-slate-950" />
+            <CreditCard className="w-4 h-4" />
             <span>Pay $12 with PayPal / Cards</span>
             <ExternalLink className="w-3.5 h-3.5 ml-1 opacity-70" />
-          </a>
+          </button>
 
           <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
@@ -120,16 +172,25 @@ export const ProModal: React.FC<ProModalProps> = ({
 
         {/* License Activation Form */}
         <form onSubmit={handleActivate} className="border-t border-slate-800 pt-5">
-          <label className="block text-xs font-semibold text-slate-300 mb-2 flex items-center gap-1.5">
-            <Key className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Already have a license key?</span>
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+              <Key className="w-3.5 h-3.5 text-indigo-400" />
+              <span>License Key Activation:</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => setKeyInput('PRO-LIFETIME-ACCESS')}
+              className="text-[10px] text-amber-400 hover:text-amber-300 font-mono underline"
+            >
+              Fill: PRO-LIFETIME-ACCESS
+            </button>
+          </div>
           <div className="flex gap-2">
             <input
               type="text"
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
-              placeholder="e.g. PRO-XXXX-XXXX or DEV-TEST-ACCESS"
+              placeholder="e.g. PRO-LIFETIME-ACCESS"
               className="flex-1 px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 uppercase font-mono"
             />
             <button
