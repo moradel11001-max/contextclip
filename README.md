@@ -88,8 +88,8 @@ I kept running into an annoying problem: whenever I copy-paste documentation, bl
 
 So I built ContextClip: a lightweight, 100% client-side tool that strips out all web noise and structures the content into model-specific prompts (Claude XML tags, Gemini markdown, OpenAI).
 
-Try it out here: [YOUR_VERCEL_URL]
-Source code: [YOUR_GITHUB_URL]
+Try it out here: https://contextclip.vercel.app/
+Source code: https://github.com/moradel11001-max/contextclip
 
 Feedback and bug reports are warmly welcome!
 ```
@@ -105,5 +105,5 @@ I created a tool called ContextClip to solve this:
 - Wraps context cleanly in Claude XML or markdown tags.
 - Has a multi-document stacker to combine 5+ pages into one prompt.
 
-100% free to use, runs entirely in the browser: [YOUR_VERCEL_URL]
+100% free to use, runs entirely in the browser: https://contextclip.vercel.app/
 ```
