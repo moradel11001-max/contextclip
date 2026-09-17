@@ -4,9 +4,9 @@ const STORAGE_KEY = 'contextclip_license';
 
 // Default configuration links (can be overridden by the user with their real store URLs)
 export const PAYMENT_LINKS = {
-  gumroad: 'https://gumroad.com/l/contextclip-pro',
+  gumroad: 'https://moradel4.gumroad.com/l/rrffjz',
   lemonSqueezy: 'https://contextclip.lemonsqueezy.com/buy/pro',
-  paypal: 'https://paypal.me/your-account/12',
+  paypal: 'https://moradel4.gumroad.com/l/rrffjz',
 };
 
 export function getLicenseState(): LicenseState {
