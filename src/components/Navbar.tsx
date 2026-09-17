@@ -63,10 +63,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Pro Status Button */}
           {license.isPro ? (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold">
+            <button
+              onClick={onOpenProModal}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition cursor-pointer"
+              title="Click to view your license key and backup instructions"
+            >
               <Crown className="w-3.5 h-3.5 text-amber-400" />
               <span>PRO ACTIVE</span>
-            </div>
+            </button>
           ) : (
             <button
               onClick={onOpenProModal}

@@ -187,11 +187,13 @@ export function App() {
         onOpenLegal={handleOpenLegal}
         onActivationSuccess={() => setShowCelebration(true)}
         isPro={license.isPro}
+        licenseKey={license.licenseKey}
       />
 
       <CelebrationModal
         isOpen={showCelebration}
         onClose={() => setShowCelebration(false)}
+        licenseKey={license.licenseKey}
       />
 
       <LegalModal

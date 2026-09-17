@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Crown, Sparkles, Check, X, Key, CreditCard, ExternalLink, ShieldCheck } from 'lucide-react';
-import { activateLicense, PAYMENT_LINKS } from '../lib/license';
+import { Crown, Sparkles, Check, X, Key, CreditCard, ExternalLink, ShieldCheck, Download, Copy, AlertTriangle, LogOut } from 'lucide-react';
+import { activateLicense, deactivateLicense, PAYMENT_LINKS } from '../lib/license';
 
 interface ProModalProps {
   isOpen: boolean;
@@ -9,6 +9,7 @@ interface ProModalProps {
   onOpenLegal: (tab: 'terms' | 'privacy') => void;
   onActivationSuccess?: () => void;
   isPro: boolean;
+  licenseKey?: string | null;
 }
 
 export const ProModal: React.FC<ProModalProps> = ({
@@ -18,13 +19,17 @@ export const ProModal: React.FC<ProModalProps> = ({
   onOpenLegal,
   onActivationSuccess,
   isPro,
+  licenseKey,
 }) => {
   const [keyInput, setKeyInput] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [termsError, setTermsError] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [message, setMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
   if (!isOpen) return null;
+
+  const currentKey = licenseKey || 'PRO-LIFETIME-ACCESS';
 
   const handleActivate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +50,47 @@ export const ProModal: React.FC<ProModalProps> = ({
     }
   };
 
+  const handleCopyKey = () => {
+    navigator.clipboard.writeText(currentKey);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownloadBackup = () => {
+    const text = `========================================
+ContextClip Pro — License Key Backup
+========================================
+
+License Key:     ${currentKey}
+Status:          Active (Lifetime License)
+Activation Date: ${new Date().toLocaleString()}
+Official Site:   https://contextclip.vercel.app/
+
+IMPORTANT INSTRUCTIONS:
+- You are responsible for preserving this license key.
+- Save this file in your password manager or secure notes.
+- To activate on other browsers or devices, open ContextClip, click "Unlock Pro", and enter this key.
+
+LOST KEY RECOVERY:
+If you lose this key on a new device, email your PayPal transaction ID to moradel11001@gmail.com and your access will be restored immediately.
+`;
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `contextclip_license_backup_${currentKey.slice(0, 8)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDeactivate = () => {
+    if (window.confirm('Are you sure you want to deactivate your license on this browser? Make sure you have your key saved!')) {
+      deactivateLicense();
+      onLicenseUpdated();
+      onClose();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
       <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
@@ -59,163 +105,245 @@ export const ProModal: React.FC<ProModalProps> = ({
           <X className="w-5 h-5" />
         </button>
 
-        {/* Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex p-3 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 mb-3 shadow-lg shadow-amber-500/10">
-            <Crown className="w-7 h-7" />
-          </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">
-            ContextClip <span className="text-amber-400">Pro</span> Lifetime Pass
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Supercharge your LLM workflow with unlimited multi-doc stacks and premium presets.
-          </p>
-        </div>
+        {isPro ? (
+          /* ACTIVE LICENSE & KEY MANAGEMENT SCREEN */
+          <div>
+            <div className="text-center mb-6">
+              <div className="inline-flex p-3 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-400 mb-3 shadow-lg shadow-amber-500/10">
+                <Crown className="w-7 h-7" />
+              </div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">
+                ContextClip <span className="text-amber-400">Pro</span> Active
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Your lifetime license is active on this browser.
+              </p>
+            </div>
 
-        {/* Pricing badge */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="text-3xl font-extrabold text-white">$12</span>
-          <span className="text-xs font-semibold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-            One-Time / Forever
-          </span>
-        </div>
+            {/* License Key Card */}
+            <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-semibold text-slate-300">Your Active License Key:</span>
+                <span className="text-[10px] text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30">
+                  LIFETIME
+                </span>
+              </div>
 
-        {/* Feature List */}
-        <div className="space-y-2.5 mb-6 text-xs text-slate-300">
-          <div className="flex items-center gap-2.5">
-            <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-              <Check className="w-3 h-3" />
-            </div>
-            <span><strong>Unlimited Multi-Document Stacker</strong> (Merge 10+ docs into 1 prompt)</span>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-              <Check className="w-3 h-3" />
-            </div>
-            <span><strong>All 12+ Pro Prompt Presets</strong> (Security Audits, Architecture, Bug Analysis)</span>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-              <Check className="w-3 h-3" />
-            </div>
-            <span><strong>Chrome Extension Package</strong> (Instant 1-click browser clipping)</span>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-              <Check className="w-3 h-3" />
-            </div>
-            <span><strong>Save 30%–60% on API Token Bills</strong> with intelligent noise stripping</span>
-          </div>
-        </div>
+              <div className="flex items-center gap-2 mb-3">
+                <code className="flex-1 px-3 py-2 bg-slate-900 rounded-xl text-amber-300 font-mono text-xs font-bold border border-slate-800 select-all">
+                  {currentKey}
+                </code>
+                <button
+                  onClick={handleCopyKey}
+                  className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 text-xs transition"
+                  title="Copy Key"
+                >
+                  {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
 
-        {/* Pre-Payment Terms Checkbox */}
-        <div className="mb-4 p-3 rounded-xl bg-slate-950/80 border border-slate-800">
-          <label className="flex items-start gap-2.5 text-[11px] text-slate-300 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={agreedToTerms}
-              onChange={(e) => {
-                setAgreedToTerms(e.target.checked);
-                if (e.target.checked) setTermsError(false);
-              }}
-              className="mt-0.5 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-0 w-4 h-4 shrink-0"
-            />
-            <span>
-              I have read and agree to the{' '}
               <button
-                type="button"
-                onClick={() => onOpenLegal('terms')}
-                className="text-indigo-400 underline hover:text-indigo-300 font-medium"
+                onClick={handleDownloadBackup}
+                className="w-full py-2 px-3 bg-slate-800 hover:bg-slate-750 text-indigo-300 hover:text-white rounded-xl text-xs font-medium border border-slate-700 flex items-center justify-center gap-2 transition"
               >
-                Terms of Service
-              </button>{' '}
-              and{' '}
-              <button
-                type="button"
-                onClick={() => onOpenLegal('privacy')}
-                className="text-indigo-400 underline hover:text-indigo-300 font-medium"
-              >
-                Privacy Policy
+                <Download className="w-3.5 h-3.5" />
+                <span>Download License Backup (.txt)</span>
               </button>
-              . I understand this is an immediate digital software license provided as-is.
-            </span>
-          </label>
-          {termsError && (
-            <p className="text-[11px] text-red-400 mt-2 font-medium">
-              ⚠️ Please check the box above to accept the terms before proceeding to checkout.
-            </p>
-          )}
-        </div>
+            </div>
 
-        {/* Buy Buttons */}
-        <div className="space-y-2.5 mb-6">
-          <button
-            type="button"
-            onClick={() => {
-              if (!agreedToTerms) {
-                setTermsError(true);
-                return;
-              }
-              window.open(PAYMENT_LINKS.paypal, '_blank', 'noopener,noreferrer');
-            }}
-            className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition transform active:scale-98 ${
-              agreedToTerms
-                ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 shadow-amber-500/25 cursor-pointer'
-                : 'bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed opacity-80'
-            }`}
-          >
-            <CreditCard className="w-4 h-4" />
-            <span>Pay $12 with PayPal / Cards</span>
-            <ExternalLink className="w-3.5 h-3.5 ml-1 opacity-70" />
-          </button>
+            {/* Key Responsibility & Lost Key Notice */}
+            <div className="bg-slate-950/60 border border-slate-800 p-3.5 rounded-2xl mb-6 text-xs text-slate-300 space-y-2">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <p className="leading-relaxed text-[11px]">
+                  <strong>Keep this key safe:</strong> You are responsible for keeping your activation key. To activate on other devices, simply enter this key.
+                </p>
+              </div>
+              <p className="text-[11px] text-slate-400 pl-6">
+                <strong>Lost your key?</strong> If you ever switch computers and lose your key, email your PayPal receipt ID to <code className="text-indigo-400">moradel11001@gmail.com</code> and we will restore your access for free.
+              </p>
+            </div>
 
-          <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Official PayPal Checkout (PayPal Balance, Visa, Mastercard, Amex)</span>
+            {/* Action Buttons */}
+            <div className="flex items-center justify-between gap-3 border-t border-slate-800 pt-4">
+              <button
+                onClick={handleDeactivate}
+                className="text-xs text-slate-500 hover:text-red-400 flex items-center gap-1.5 transition"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Deactivate on this device</span>
+              </button>
+
+              <button
+                onClick={onClose}
+                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl shadow-md transition"
+              >
+                Done
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          /* NEW CUSTOMER PURCHASE & ACTIVATION SCREEN */
+          <div>
+            {/* Header */}
+            <div className="text-center mb-6">
+              <div className="inline-flex p-3 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 mb-3 shadow-lg shadow-amber-500/10">
+                <Crown className="w-7 h-7" />
+              </div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">
+                ContextClip <span className="text-amber-400">Pro</span> Lifetime Pass
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Supercharge your LLM workflow with unlimited multi-doc stacks and premium presets.
+              </p>
+            </div>
 
-        {/* License Activation Form */}
-        <form onSubmit={handleActivate} className="border-t border-slate-800 pt-5">
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-              <Key className="w-3.5 h-3.5 text-indigo-400" />
-              <span>License Key Activation:</span>
-            </label>
-            <button
-              type="button"
-              onClick={() => setKeyInput('PRO-LIFETIME-ACCESS')}
-              className="text-[10px] text-amber-400 hover:text-amber-300 font-mono underline"
-            >
-              Fill: PRO-LIFETIME-ACCESS
-            </button>
+            {/* Pricing badge */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <span className="text-3xl font-extrabold text-white">$12</span>
+              <span className="text-xs font-semibold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                One-Time / Forever
+              </span>
+            </div>
+
+            {/* Feature List */}
+            <div className="space-y-2.5 mb-6 text-xs text-slate-300">
+              <div className="flex items-center gap-2.5">
+                <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Check className="w-3 h-3" />
+                </div>
+                <span><strong>Unlimited Multi-Document Stacker</strong> (Merge 10+ docs into 1 prompt)</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Check className="w-3 h-3" />
+                </div>
+                <span><strong>All 12+ Pro Prompt Presets</strong> (Security Audits, Architecture, Bug Analysis)</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Check className="w-3 h-3" />
+                </div>
+                <span><strong>Chrome Extension Package</strong> (Instant 1-click browser clipping)</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Check className="w-3 h-3" />
+                </div>
+                <span><strong>Save 30%–60% on API Token Bills</strong> with intelligent noise stripping</span>
+              </div>
+            </div>
+
+            {/* Pre-Payment Terms Checkbox */}
+            <div className="mb-4 p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+              <label className="flex items-start gap-2.5 text-[11px] text-slate-300 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => {
+                    setAgreedToTerms(e.target.checked);
+                    if (e.target.checked) setTermsError(false);
+                  }}
+                  className="mt-0.5 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-0 w-4 h-4 shrink-0"
+                />
+                <span>
+                  I have read and agree to the{' '}
+                  <button
+                    type="button"
+                    onClick={() => onOpenLegal('terms')}
+                    className="text-indigo-400 underline hover:text-indigo-300 font-medium"
+                  >
+                    Terms of Service
+                  </button>{' '}
+                  and{' '}
+                  <button
+                    type="button"
+                    onClick={() => onOpenLegal('privacy')}
+                    className="text-indigo-400 underline hover:text-indigo-300 font-medium"
+                  >
+                    Privacy Policy
+                  </button>
+                  . I understand this is an immediate digital software license provided as-is.
+                </span>
+              </label>
+              {termsError && (
+                <p className="text-[11px] text-red-400 mt-2 font-medium">
+                  ⚠️ Please check the box above to accept the terms before proceeding to checkout.
+                </p>
+              )}
+            </div>
+
+            {/* Buy Buttons */}
+            <div className="space-y-2.5 mb-6">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!agreedToTerms) {
+                    setTermsError(true);
+                    return;
+                  }
+                  window.open(PAYMENT_LINKS.paypal, '_blank', 'noopener,noreferrer');
+                }}
+                className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition transform active:scale-98 ${
+                  agreedToTerms
+                    ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 shadow-amber-500/25 cursor-pointer'
+                    : 'bg-slate-800 text-slate-400 border border-slate-700 cursor-not-allowed opacity-80'
+                }`}
+              >
+                <CreditCard className="w-4 h-4" />
+                <span>Pay $12 with PayPal / Cards</span>
+                <ExternalLink className="w-3.5 h-3.5 ml-1 opacity-70" />
+              </button>
+
+              <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Official PayPal Checkout (PayPal Balance, Visa, Mastercard, Amex)</span>
+              </div>
+            </div>
+
+            {/* License Activation Form */}
+            <form onSubmit={handleActivate} className="border-t border-slate-800 pt-5">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                  <Key className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>License Key Activation:</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setKeyInput('PRO-LIFETIME-ACCESS')}
+                  className="text-[10px] text-amber-400 hover:text-amber-300 font-mono underline"
+                >
+                  Fill: PRO-LIFETIME-ACCESS
+                </button>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={keyInput}
+                  onChange={(e) => setKeyInput(e.target.value)}
+                  placeholder="e.g. PRO-LIFETIME-ACCESS"
+                  className="flex-1 px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 uppercase font-mono"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl shadow-md transition"
+                >
+                  Activate
+                </button>
+              </div>
+
+              {message && (
+                <p className={`mt-2 text-xs ${message.isError ? 'text-red-400' : 'text-emerald-400'}`}>
+                  {message.text}
+                </p>
+              )}
+
+              <p className="mt-2 text-[10px] text-slate-400 text-center">
+                After completing your PayPal checkout, enter <code className="text-amber-300 font-mono font-semibold">PRO-LIFETIME-ACCESS</code> above to unlock Pro.
+              </p>
+            </form>
           </div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={keyInput}
-              onChange={(e) => setKeyInput(e.target.value)}
-              placeholder="e.g. PRO-LIFETIME-ACCESS"
-              className="flex-1 px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 uppercase font-mono"
-            />
-            <button
-              type="submit"
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-xl shadow-md transition"
-            >
-              Activate
-            </button>
-          </div>
-
-          {message && (
-            <p className={`mt-2 text-xs ${message.isError ? 'text-red-400' : 'text-emerald-400'}`}>
-              {message.text}
-            </p>
-          )}
-
-          <p className="mt-2 text-[10px] text-slate-400 text-center">
-            After completing your PayPal checkout, enter <code className="text-amber-300 font-mono font-semibold">PRO-LIFETIME-ACCESS</code> above to unlock Pro.
-          </p>
-        </form>
+        )}
       </div>
     </div>
   );
