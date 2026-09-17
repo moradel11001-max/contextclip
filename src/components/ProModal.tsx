@@ -100,25 +100,21 @@ export const ProModal: React.FC<ProModalProps> = ({
         </div>
 
         {/* Buy Buttons */}
-        <div className="space-y-2 mb-6">
+        <div className="space-y-2.5 mb-6">
           <a
-            href={PAYMENT_LINKS.gumroad}
+            href={PAYMENT_LINKS.paypal}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition transform active:scale-98"
+            className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 transition transform active:scale-98"
           >
-            <CreditCard className="w-4 h-4" />
-            <span>Get Lifetime Access on Gumroad ($12)</span>
+            <CreditCard className="w-4 h-4 text-slate-950" />
+            <span>Pay $12 with PayPal / Cards</span>
             <ExternalLink className="w-3.5 h-3.5 ml-1 opacity-70" />
           </a>
 
-          <div className="flex items-center justify-center gap-4 text-[11px] text-slate-500 pt-1">
-            <span>Also supports Lemon Squeezy & PayPal</span>
-            <span>•</span>
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              Secure Checkout
-            </span>
+          <div className="flex items-center justify-center gap-2 text-[11px] text-slate-400 pt-1">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Official PayPal Checkout (PayPal Balance, Visa, Mastercard, Amex)</span>
           </div>
         </div>
 
@@ -150,8 +146,8 @@ export const ProModal: React.FC<ProModalProps> = ({
             </p>
           )}
 
-          <p className="mt-2 text-[10px] text-slate-500 text-center">
-            Tip: For local testing and demos, you can use key <code className="text-slate-400 font-mono">DEV-TEST-ACCESS</code>
+          <p className="mt-2 text-[10px] text-slate-400 text-center">
+            After completing your PayPal checkout, enter <code className="text-amber-300 font-mono font-semibold">PRO-LIFETIME-ACCESS</code> above to unlock Pro.
           </p>
         </form>
       </div>
