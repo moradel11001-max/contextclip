@@ -6,9 +6,10 @@ import { StackPanel } from './components/StackPanel';
 import { ProModal } from './components/ProModal';
 import { LegalModal } from './components/LegalModal';
 import { ConsentBanner } from './components/ConsentBanner';
+import { CelebrationModal } from './components/CelebrationModal';
 import { ExtractedDocument, LicenseState } from './types';
 import { getLicenseState } from './lib/license';
-import { Sparkles, Terminal, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { Sparkles, Terminal, ArrowUpRight, Crown } from 'lucide-react';
 
 export function App() {
   const [currentDocument, setCurrentDocument] = useState<ExtractedDocument | null>(null);
@@ -17,12 +18,27 @@ export function App() {
   const [isProModalOpen, setIsProModalOpen] = useState(false);
   const [isStackOpen, setIsStackOpen] = useState(false);
   const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
   const [legalTab, setLegalTab] = useState<'terms' | 'privacy'>('terms');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('contextclip_theme') as 'dark' | 'light') || 'dark';
+  });
   const [license, setLicense] = useState<LicenseState>({
     isPro: false,
     licenseKey: null,
     activatedAt: null,
   });
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    localStorage.setItem('contextclip_theme', nextTheme);
+    document.documentElement.classList.toggle('dark', nextTheme === 'dark');
+  };
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
 
   const handleOpenLegal = (tab: 'terms' | 'privacy') => {
     setLegalTab(tab);
@@ -57,14 +73,25 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white">
-      {/* Top Value Banner */}
-      <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border-b border-indigo-900/40 text-[11px] text-indigo-300 py-1.5 px-4 text-center flex items-center justify-center gap-2">
-        <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-        <span>
-          Stop wasting token context on ads, navigation, and bloated HTML. Feed clean, structured context to Claude, ChatGPT & Gemini.
-        </span>
-      </div>
+    <div className={`min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white transition-colors duration-200 ${
+      theme === 'dark' ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'
+    }`}>
+      {/* Top Value Banner - Dynamic based on Pro status */}
+      {license.isPro ? (
+        <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-amber-950 border-b border-amber-900/40 text-[11px] text-amber-300 py-1.5 px-4 text-center flex items-center justify-center gap-2">
+          <Crown className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <span>
+            ContextClip Pro Lifetime Active — Unlimited multi-document stacking & all 12+ prompt templates unlocked.
+          </span>
+        </div>
+      ) : (
+        <div className="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border-b border-indigo-900/40 text-[11px] text-indigo-300 py-1.5 px-4 text-center flex items-center justify-center gap-2">
+          <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <span>
+            Stop wasting token context on ads, navigation, and bloated HTML. Feed clean, structured context to Claude, ChatGPT & Gemini.
+          </span>
+        </div>
+      )}
 
       {/* Navbar */}
       <Navbar
@@ -72,6 +99,8 @@ export function App() {
         onOpenProModal={() => setIsProModalOpen(true)}
         stackCount={stack.length}
         onOpenStack={() => setIsStackOpen(true)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Main Content Area */}
@@ -119,13 +148,20 @@ export function App() {
               Privacy Policy
             </button>
             <span>•</span>
-            <button
-              onClick={() => setIsProModalOpen(true)}
-              className="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-semibold"
-            >
-              <span>Unlock Pro ($12)</span>
-              <ArrowUpRight className="w-3 h-3" />
-            </button>
+            {!license.isPro ? (
+              <button
+                onClick={() => setIsProModalOpen(true)}
+                className="text-amber-400 hover:text-amber-300 transition flex items-center gap-1 font-semibold"
+              >
+                <span>Unlock Pro ($12)</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </button>
+            ) : (
+              <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-xs bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg">
+                <Crown className="w-3.5 h-3.5 text-amber-400" />
+                <span>PRO Active</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -149,7 +185,13 @@ export function App() {
         onClose={() => setIsProModalOpen(false)}
         onLicenseUpdated={() => setLicense(getLicenseState())}
         onOpenLegal={handleOpenLegal}
+        onActivationSuccess={() => setShowCelebration(true)}
         isPro={license.isPro}
+      />
+
+      <CelebrationModal
+        isOpen={showCelebration}
+        onClose={() => setShowCelebration(false)}
       />
 
       <LegalModal

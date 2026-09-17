@@ -7,6 +7,7 @@ interface ProModalProps {
   onClose: () => void;
   onLicenseUpdated: () => void;
   onOpenLegal: (tab: 'terms' | 'privacy') => void;
+  onActivationSuccess?: () => void;
   isPro: boolean;
 }
 
@@ -15,6 +16,7 @@ export const ProModal: React.FC<ProModalProps> = ({
   onClose,
   onLicenseUpdated,
   onOpenLegal,
+  onActivationSuccess,
   isPro,
 }) => {
   const [keyInput, setKeyInput] = useState('');
@@ -34,7 +36,10 @@ export const ProModal: React.FC<ProModalProps> = ({
       onLicenseUpdated();
       setTimeout(() => {
         onClose();
-      }, 1200);
+        if (onActivationSuccess) {
+          onActivationSuccess();
+        }
+      }, 500);
     } else {
       setMessage({ text: res.message, isError: true });
     }

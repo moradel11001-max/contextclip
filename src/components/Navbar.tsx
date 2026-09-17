@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Crown, Terminal, Layers } from 'lucide-react';
+import { Sparkles, Crown, Terminal, Layers, Sun, Moon } from 'lucide-react';
 import { LicenseState } from '../types';
 
 interface NavbarProps {
@@ -7,6 +7,8 @@ interface NavbarProps {
   onOpenProModal: () => void;
   stackCount: number;
   onOpenStack: () => void;
+  theme: 'dark' | 'light';
+  onToggleTheme: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -14,9 +16,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenProModal,
   stackCount,
   onOpenStack,
+  theme,
+  onToggleTheme,
 }) => {
   return (
-    <header className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
+    <header className="border-b border-slate-800 dark:border-slate-800 bg-slate-900/60 dark:bg-slate-900/60 backdrop-blur-md sticky top-0 z-30 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center gap-3">
@@ -35,7 +39,16 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          {/* Theme Toggle Button */}
+          <button
+            onClick={onToggleTheme}
+            className="p-2 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-750 text-slate-300 hover:text-white transition"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+          </button>
+
           {/* Stack Drawer Button */}
           <button
             onClick={onOpenStack}
