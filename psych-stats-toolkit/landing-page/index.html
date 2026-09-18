@@ -234,7 +234,7 @@
 
           <!-- PayPal Checkout Area -->
           <div class="text-center">
-            <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="inline-block w-full">
+            <form id="checkout-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="inline-block w-full">
               <input type="hidden" name="cmd" value="_xclick">
               <input type="hidden" name="business" value="moradel11001@gmail.com">
               <input type="hidden" name="item_name" value="PsychStats Master Toolkit (APA 7th Edition)">
@@ -242,12 +242,20 @@
               <input type="hidden" name="currency_code" value="USD">
               <input type="hidden" name="no_shipping" value="1">
               <input type="hidden" name="return" value="https://contextclip.vercel.app/download-psychstats.html">
+              
+              <div class="mb-4 text-left">
+                <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-700 bg-white p-3.5 rounded-xl border border-slate-300 hover:border-indigo-300 transition">
+                  <input type="checkbox" id="legal-agreement" required class="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                  <span>I agree to the <a href="#legal-terms" class="text-indigo-600 underline font-semibold">Terms of Purchase</a>, Digital Goods Immediate Delivery Policy, and the Academic Integrity Notice.</span>
+                </label>
+              </div>
+
               <button type="submit" class="w-full py-4 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 transition flex items-center justify-center gap-2">
                 <span>Pay $15 with PayPal & Download Instantly</span>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
               </button>
             </form>
-            <p class="text-[11px] text-slate-500 mt-3">Secure 256-bit encrypted checkout via PayPal. Instant download zip provided upon completion.</p>
+            <p class="text-[11px] text-slate-500 mt-3">Secure 256-bit encrypted checkout via PayPal. Instant download zip provided upon payment completion.</p>
           </div>
         </div>
       </div>
@@ -272,6 +280,54 @@
       </div>
     </div>
   </section>
+
+  <!-- Legal Terms & Disclosures -->
+  <section id="legal-terms" class="py-16 bg-slate-50 border-t border-slate-200">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6">
+      <h3 class="text-xl font-bold text-slate-900 mb-6 text-center">Legal Terms, Academic Integrity & Consumer Disclosures</h3>
+      
+      <div class="grid md:grid-cols-2 gap-6 text-xs text-slate-600 leading-relaxed">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200">
+          <h4 class="font-bold text-slate-900 mb-2 uppercase tracking-wider text-[11px] text-indigo-700">1. Academic Integrity Policy</h4>
+          <p>
+            The PsychStats Toolkit is an educational computational template designed to assist students and researchers in calculating statistical figures from their own empirical survey data and formatting APA 7th Edition tables. It is a calculation spreadsheet tool (similar to SPSS, R packages, or Excel add-ins). It <strong>does not</strong> provide ghostwriting, paper-writing, essay generation, or data fabrication. Users remain 100% responsible for the authenticity of their data and compliance with their institution's academic honor codes and Institutional Review Board (IRB) approvals.
+          </p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200">
+          <h4 class="font-bold text-slate-900 mb-2 uppercase tracking-wider text-[11px] text-indigo-700">2. Digital Goods Delivery & Refund Policy</h4>
+          <p>
+            The PsychStats Master Toolkit is an intangible digital download delivered immediately upon payment completion. In accordance with digital product consumer standards, sales are final once downloaded. However, if you experience any technical file corruption, formula malfunction, or software defect, our support team will provide a replacement package or resolution within 24 hours. Contact: <a href="mailto:moradel11001@gmail.com" class="text-indigo-600 underline font-medium">moradel11001@gmail.com</a>.
+          </p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200">
+          <h4 class="font-bold text-slate-900 mb-2 uppercase tracking-wider text-[11px] text-indigo-700">3. Privacy & Zero-Data Collection Guarantee</h4>
+          <p>
+            We strictly protect your privacy. This website uses zero cookies, zero tracking scripts, and zero advertising trackers. All survey calculations, participant responses, and thesis data are processed entirely offline on your local computer. No research data is ever uploaded or transmitted across the internet. Checkout transactions are handled directly on PayPal's secure 256-bit encrypted servers.
+          </p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200">
+          <h4 class="font-bold text-slate-900 mb-2 uppercase tracking-wider text-[11px] text-indigo-700">4. Warranties & Third-Party Trademark Disclaimer</h4>
+          <p>
+            Templates and writing guides are provided "AS IS" without warranty of any kind. While formulas are verified against standard statistical algorithms, the publisher assumes no liability for specific grade outcomes. SPSS, IBM, APA, Microsoft Excel, Google Sheets, Qualtrics, and SurveyMonkey are trademarks of their respective owners; their mention is purely descriptive and does not imply affiliation or endorsement.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
+      var agreeBox = document.getElementById('legal-agreement');
+      if (!agreeBox.checked) {
+        e.preventDefault();
+        alert('Please review and check the agreement box to accept the Terms of Purchase, Digital Goods Policy, and Academic Integrity Notice before checking out.');
+        agreeBox.focus();
+      }
+    });
+  </script>
 
   <!-- Footer -->
   <footer class="border-t border-slate-200 py-8 bg-white text-center text-xs text-slate-500">
