@@ -1,0 +1,15 @@
+======================================================================
+ APA 7th EDITION RESULTS SECTION DRAFT (READY TO COPY INTO THESIS)
+======================================================================
+
+Participant Demographics:
+A total of N = 50 university participants completed the survey (M_age = 23.44 years, SD = 2.89, range: 19–28 years).
+
+Scale Reliabilities:
+Internal consistency for all multi-item psychological instruments was examined via Cronbach's alpha (α). The Perceived Stress Scale demonstrated satisfactory reliability (α = .75, 10 items), as did the Sleep Quality Index (α = .76, 7 items).
+
+Hypothesis Testing (Independent-Samples t-Test):
+An independent-samples t-test was conducted to determine whether participants in the intervention group reported lower perceived stress compared to the control group. In accordance with predictions, participants in the treatment condition reported significantly lower stress (M = 2.02, SD = 0.23) than control participants (M = 2.94, SD = 0.19), t(48) = 15.12, p < .001, two-tailed, representing a substantial effect size (Cohen's d = 4.28).
+
+Bivariate Correlations:
+Pearson bivariate correlation analyses indicated that perceived stress was moderately negatively correlated with sleep quality, r(48) = -.76, p < .001, and significantly negatively related to academic GPA, r(48) = -.19, p = .174.
